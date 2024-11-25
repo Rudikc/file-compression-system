@@ -1,0 +1,12 @@
+// Compress files
+python main.py compress -f files/file_to_compress1.txt files/file_to_compress2.txt -o files/compressed_archive -a zip
+
+// Decompress files
+python main.py decompress -f files/compressed_archive.zip -o files/decompressed_files
+
+---
+// Compress files with password
+python main.py compress -f files/file_to_compress1.txt files/file_to_compress2.txt -o files/compressed_archive -a zip -p password
+
+// Decompress files with password
+python main.py decompress -f files/compressed_archive.zip.enc -o files/decompressed_files -p password
