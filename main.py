@@ -7,8 +7,6 @@ def main():
     )
     subparsers = parser.add_subparsers(dest="command")
 
-    gui_parser = subparsers.add_parser("gui", help="Start GUI")
-
     compress_parser = subparsers.add_parser("compress", help="Compress files")
     compress_parser.add_argument(
         "-a", "--algorithm", choices=["zip", "gzip", "lzma"], required=True
@@ -24,7 +22,7 @@ def main():
 
     args = parser.parse_args()
 
-    if args.command == "gui":
+    if args.command is None:
         from compressors.gui_compressor import GuiCompressor
 
         app = GuiCompressor()
