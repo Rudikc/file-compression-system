@@ -8,7 +8,6 @@ from algorithms import (
     detect_algorithm_by_filepath,
 )
 from encryption_manager import EncryptionManager
-from progress_tracker import ProgressTracker
 from task_history import CompressionTask, TaskHistory, generate_task_id
 
 logger = logging.getLogger(__name__)
@@ -17,7 +16,6 @@ logger = logging.getLogger(__name__)
 class Compressor(ABC):
     def __init__(self):
         self.task_history = TaskHistory()
-        self.progress_tracker = ProgressTracker()
 
     @abstractmethod
     def run(self):
