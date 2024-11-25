@@ -3,12 +3,10 @@ import os
 from abc import ABC, abstractmethod
 from datetime import datetime
 
-from algorithms import (
-    get_algorithm,
-    detect_algorithm_by_filepath,
-)
-from encryption_manager import EncryptionManager
-from task_history import CompressionTask, TaskHistory, generate_task_id
+from compression.algorithms import get_algorithm, detect_algorithm_by_filepath
+from encryption.encryption_manager import EncryptionManager
+from history.task_history import TaskHistory, generate_task_id
+from history.compression_task import CompressionTask
 
 logger = logging.getLogger(__name__)
 

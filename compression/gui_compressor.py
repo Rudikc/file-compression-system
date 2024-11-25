@@ -19,8 +19,8 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt
 
-from compressors.compressor import Compressor
-from settings import Settings
+from compression.compressor import Compressor
+from settings.settings import Settings
 
 
 class GuiCompressor(Compressor):

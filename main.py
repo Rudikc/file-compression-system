@@ -23,12 +23,12 @@ def main():
     args = parser.parse_args()
 
     if args.command is None:
-        from compressors.gui_compressor import GuiCompressor
+        from compression.gui_compressor import GuiCompressor
 
         app = GuiCompressor()
         app.run()
     elif args.command == "compress":
-        from compressors.cli_compressor import CliCompressor
+        from compression.cli_compressor import CliCompressor
 
         app = CliCompressor(
             files=args.files,
@@ -39,7 +39,7 @@ def main():
         )
         app.run()
     elif args.command == "decompress":
-        from compressors.cli_compressor import CliCompressor
+        from compression.cli_compressor import CliCompressor
 
         app = CliCompressor(
             files=[args.file],

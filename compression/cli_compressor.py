@@ -1,4 +1,4 @@
-from compressors.compressor import Compressor
+from compression.compressor import Compressor
 
 
 class CliCompressor(Compressor):
