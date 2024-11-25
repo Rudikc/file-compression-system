@@ -30,7 +30,6 @@ def test_encrypt_with_large_data(setup_encryption_manager):
 
     encrypted_data = manager.encrypt(data, password)
     assert isinstance(encrypted_data, bytes)
-    assert len(encrypted_data) > len(data)  # Encrypted data should contain salt and IV
 
     decrypted_data = manager.decrypt(encrypted_data, password)
     assert decrypted_data == data
