@@ -107,4 +107,10 @@ def detect_algorithm_by_filepath(archive):
     elif extension == ".xz":
         return LzmaAlgorithm()
     else:
-        raise ValueError("Unsupported archive format")
+        raise UnsupportedAlgorithmException("Unsupported archive format")
+
+
+class UnsupportedAlgorithmException(Exception):
+    def __init__(self, message="Unsupported algorithm specified"):
+        self.message = message
+        super().__init__(self.message)

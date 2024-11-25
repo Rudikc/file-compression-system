@@ -19,6 +19,10 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt
 
+from compression.algorithms import (
+    UnsupportedAlgorithmException,
+    detect_algorithm_by_filepath,
+)
 from compression.compressor import Compressor
 from settings.settings import Settings
 
@@ -110,7 +114,12 @@ class MainWindow(QMainWindow):
             )
             return
 
-        self.compressor.compress(files, algorithm, destination, password)
+        try:
+            self.compressor.compress(files, algorithm, destination, password)
+        except Exception as e:
+            QMessageBox.warning(self, "Failure", str(e))
+            return
+
         QMessageBox.information(self, "Success", "Compression completed successfully.")
         self.update_progress_bar(100)
 
@@ -127,7 +136,12 @@ class MainWindow(QMainWindow):
         if not destination:
             return
         password = self.get_password()
-        self.compressor.decompress(archive, destination, password)
+        try:
+            self.compressor.decompress(archive, destination, password)
+        except Exception as e:
+            QMessageBox.warning(self, "Failure", str(e))
+            return
+
         QMessageBox.information(
             self, "Success", "Decompression completed successfully."
         )
