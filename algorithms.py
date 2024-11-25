@@ -1,4 +1,7 @@
+import gzip
+import lzma
 import os
+import tarfile
 import zipfile
 from abc import ABC, abstractmethod
 
@@ -28,18 +31,60 @@ class ZipAlgorithm(Algorithm):
 
 class GzipAlgorithm(Algorithm):
     def compress(self, files, destination):
-        pass
+        tar_path = destination + ".tar"
+        gz_path = destination + ".tar.gz"
 
-    def decompress(self, archive, destination):
-        pass
+        with tarfile.open(tar_path, "w") as tar:
+            for file in files:
+                tar.add(file, arcname=os.path.basename(file))
+
+        with open(tar_path, "rb") as f_in:
+            with gzip.open(gz_path, "wb") as f_out:
+                f_out.writelines(f_in)
+
+        os.remove(tar_path)
+        return gz_path
+
+    def decompress(self, archive: str, destination: str):
+        tar_path = archive.replace(".gz", "")
+
+        with gzip.open(archive, "rb") as f_in:
+            with open(tar_path, "wb") as f_out:
+                f_out.write(f_in.read())
+
+        with tarfile.open(tar_path, "r") as tar:
+            tar.extractall(destination)
+
+        os.remove(tar_path)
 
 
 class LzmaAlgorithm(Algorithm):
-    def compress(self, files, destination):
-        pass
+    def compress(self, files: list[str], destination: str):
+        tar_path = destination + ".tar"
+        xz_path = destination + ".tar.xz"
 
-    def decompress(self, archive, destination):
-        pass
+        with tarfile.open(tar_path, "w") as tar:
+            for file in files:
+                tar.add(file, arcname=os.path.basename(file))
+
+        with open(tar_path, "rb") as f_in:
+            with lzma.open(xz_path, "wb") as f_out:
+                f_out.writelines(f_in)
+
+        os.remove(tar_path)
+        return xz_path
+
+    def decompress(self, archive: str, destination: str):
+        tar_path = archive.replace(".xz", "")
+
+        with lzma.open(archive, "rb") as f_in:
+            with open(tar_path, "wb") as f_out:
+                f_out.write(f_in.read())
+
+        with tarfile.open(tar_path, "r") as tar:
+            tar.extractall(destination)
+
+        os.remove(tar_path)
 
 
 _ALL_ALGORITHMS = {
