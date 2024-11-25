@@ -5,12 +5,13 @@ from datetime import datetime
 
 
 class CompressionTask:
-    def __init__(self, task_id, files, algorithm, date, status):
+    def __init__(self, task_id, files, algorithm, date, status, direction):
         self.task_id = task_id
         self.files = files
         self.algorithm = algorithm.__class__.__name__
         self.date = date
         self.status = status
+        self.direction = direction
 
     def to_dict(self):
         return {
@@ -19,6 +20,7 @@ class CompressionTask:
             "algorithm": self.algorithm,
             "date": self.date.isoformat(),
             "status": self.status,
+            "direction": self.direction,
         }
 
     @staticmethod
@@ -29,6 +31,7 @@ class CompressionTask:
             algorithm=data["algorithm"],
             date=datetime.fromisoformat(data["date"]),
             status=data["status"],
+            direction=data["direction"],
         )
 
 
@@ -55,3 +58,7 @@ class TaskHistory:
             with open(self.HISTORY_FILE, "r") as f:
                 tasks_data = json.load(f)
                 self.tasks = [CompressionTask.from_dict(data) for data in tasks_data]
+
+
+def generate_task_id():
+    return int(datetime.now().timestamp())
