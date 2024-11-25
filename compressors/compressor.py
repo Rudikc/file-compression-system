@@ -1,3 +1,4 @@
+import logging
 import os
 from abc import ABC, abstractmethod
 from datetime import datetime
@@ -9,6 +10,8 @@ from algorithms import (
 from encryption_manager import EncryptionManager
 from progress_tracker import ProgressTracker
 from task_history import CompressionTask, TaskHistory, generate_task_id
+
+logger = logging.getLogger(__name__)
 
 
 class Compressor(ABC):
@@ -40,25 +43,13 @@ class Compressor(ABC):
                     compressed_encrypted_file.write(data)
                 os.remove(compressed_file_path)
 
-            task = CompressionTask(
-                task_id=generate_task_id(),
-                files=files,
-                algorithm=algorithm,
-                date=datetime.now(),
-                status="Completed",
-                direction="compress",
-            )
-            self.task_history.add_entry(task)
+                self._log_compression_task(files, algorithm, "Completed", "compress")
         except Exception as e:
-            task = CompressionTask(
-                task_id=generate_task_id(),
-                files=files,
-                algorithm=algorithm,
-                date=datetime.now(),
-                status=f"Failed: {str(e)}",
-                direction="compress",
+            self._log_compression_task(
+                files, algorithm, f"Failed: {str(e)}", "compress"
             )
-            self.task_history.add_entry(task)
+            logger.error(f"Error during compression: {e}")
+            raise e
 
     def decompress(self, archive: str, destination: str, password=None):
         algorithm = None
@@ -83,27 +74,25 @@ class Compressor(ABC):
             if compressed_file_path != original_path:
                 os.remove(compressed_file_path)
 
-            task = CompressionTask(
-                task_id=generate_task_id(),
-                files=[archive],
-                algorithm=algorithm,
-                date=datetime.now(),
-                status="Completed",
-                direction="decompress",
-            )
-            self.task_history.add_entry(task)
+            self._log_compression_task([archive], algorithm, "Completed", "decompress")
         except Exception as e:
             if compressed_file_path != original_path:
                 os.remove(compressed_file_path)
 
-            task = CompressionTask(
-                task_id=generate_task_id(),
-                files=[archive],
-                algorithm=algorithm,
-                date=datetime.now(),
-                status=f"Failed: {str(e)}",
-                direction="decompress",
+            self._log_compression_task(
+                [archive], algorithm, f"Failed: {str(e)}", "decompress"
             )
-            self.task_history.add_entry(task)
-            print(f"Error: {e}")
+            logger.error(f"Error: {e}")
             raise e
+
+    def _log_compression_task(self, files, algorithm, status, direction):
+        task = CompressionTask(
+            task_id=generate_task_id(),
+            files=files,
+            algorithm=algorithm,
+            date=datetime.now(),
+            status=status,
+            direction=direction,
+        )
+        self.task_history.add_entry(task)
+        logger.info(f"Compression task logged: {task.to_dict()}")
