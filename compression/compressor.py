@@ -39,7 +39,7 @@ class Compressor(ABC):
                     compressed_encrypted_file.write(data)
                 os.remove(compressed_file_path)
 
-                self._log_compression_task(files, algorithm, "Completed", "compress")
+            self._log_compression_task(files, algorithm, "Completed", "compress")
         except Exception as e:
             self._log_compression_task(
                 files, algorithm, f"Failed: {str(e)}", "compress"

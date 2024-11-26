@@ -19,20 +19,19 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt
 
-from compression.algorithms import (
-    UnsupportedAlgorithmException,
-    detect_algorithm_by_filepath,
-)
 from compression.compressor import Compressor
 from settings.settings import Settings
 
 
 class GuiCompressor(Compressor):
-    def run(self):
-        app = QApplication(sys.argv)
+    def __init__(self):
+        super().__init__()
+        self.app = QApplication(sys.argv)
         self.window = MainWindow(self)
         self.window.show()
-        sys.exit(app.exec_())
+
+    def run(self):
+        sys.exit(self.app.exec_())
 
 
 class MainWindow(QMainWindow):
