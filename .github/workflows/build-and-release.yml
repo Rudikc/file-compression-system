@@ -1,0 +1,44 @@
+name: Build and Release Executable
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set Up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+
+      - name: Install Dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build Executable
+        run: |
+          source venv/bin/activate
+          pyinstaller --onefile --noconsole main.py
+
+      - name: Archive Executable
+        run: |
+          mkdir release
+          mv dist/main release/main
+          tar -czvf release/main.tar.gz -C release main
+
+      - name: Upload Executable to GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: release/main.tar.gz
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
