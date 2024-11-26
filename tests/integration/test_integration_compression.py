@@ -32,7 +32,7 @@ def test_cli_compress_decompress_no_encryption(setup_test_environment):
     subprocess.run(
         [
             "python",
-            "../main.py",
+            "main.py",
             "compress",
             "-a",
             "zip",
@@ -48,7 +48,7 @@ def test_cli_compress_decompress_no_encryption(setup_test_environment):
     assert os.path.exists(compressed_file)
 
     subprocess.run(
-        ["python", "../main.py", "decompress", "-f", compressed_file, "-o", output_dir],
+        ["python", "main.py", "decompress", "-f", compressed_file, "-o", output_dir],
         check=True,
     )
 
@@ -76,7 +76,7 @@ def test_cli_compress_decompress_with_encryption(setup_test_environment):
     subprocess.run(
         [
             "python",
-            "../main.py",
+            "main.py",
             "compress",
             "-a",
             "gzip",
@@ -96,7 +96,7 @@ def test_cli_compress_decompress_with_encryption(setup_test_environment):
     subprocess.run(
         [
             "python",
-            "../main.py",
+            "main.py",
             "decompress",
             "-f",
             compressed_file,
