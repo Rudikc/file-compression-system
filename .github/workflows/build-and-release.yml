@@ -43,6 +43,8 @@ jobs:
           cd release
           if [ "${{ matrix.os }}" == "windows-latest" ]; then powershell -Command "Compress-Archive -Path main-windows.exe -DestinationPath main-windows.zip"; else tar -czvf main-${{ matrix.os }}.tar.gz main-*; fi
         shell: bash
+      - name: List Release Directory
+        run: ls -R ./release
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
@@ -61,7 +63,10 @@ jobs:
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: ./release/*
+          artifacts: |
+            ./release/main-linux.tar.gz
+            ./release/main-macos.tar.gz
+            ./release/main-windows.zip
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
