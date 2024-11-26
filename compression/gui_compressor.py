@@ -20,6 +20,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 
 from compression.compressor import Compressor
+from encryption.password import Password
 from settings.settings import Settings
 
 
@@ -148,7 +149,7 @@ class MainWindow(QMainWindow):
 
     def get_password(self):
         if self.encryption_checkbox.isChecked():
-            password = self.password_input.text()
+            password = Password(self.password_input.text())
             if not password:
                 QMessageBox.warning(
                     self, "Warning", "Please enter a password for encryption."

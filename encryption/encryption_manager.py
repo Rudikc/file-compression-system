@@ -4,13 +4,15 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import os
 from cryptography.hazmat.backends import default_backend
 
+from encryption.password import Password
+
 
 class EncryptionManager:
     def __init__(self):
         self.backend = default_backend()
         self.block_size = 128
 
-    def encrypt(self, data: bytes, password: bytes):
+    def encrypt(self, data: bytes, password: Password):
         salt = os.urandom(16)
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
@@ -19,7 +21,7 @@ class EncryptionManager:
             iterations=100000,
             backend=self.backend,
         )
-        key = kdf.derive(password)
+        key = kdf.derive(password.to_bytes())
 
         iv = os.urandom(16)
 
@@ -32,7 +34,7 @@ class EncryptionManager:
 
         return salt + iv + encrypted_data
 
-    def decrypt(self, data: bytes, password: bytes):
+    def decrypt(self, data: bytes, password: Password):
         salt = data[:16]
         iv = data[16:32]
         encrypted_data = data[32:]
@@ -44,7 +46,7 @@ class EncryptionManager:
             iterations=100000,
             backend=self.backend,
         )
-        key = kdf.derive(password)
+        key = kdf.derive(password.to_bytes())
 
         cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=self.backend)
         decryptor = cipher.decryptor()

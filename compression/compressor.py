@@ -5,6 +5,7 @@ from datetime import datetime
 
 from compression.algorithm_factory import AlgorithmFactory
 from encryption.encryption_manager import EncryptionManager
+from encryption.password import Password
 from history.task_history import TaskHistory, generate_task_id
 from history.compression_task import CompressionTask
 
@@ -20,7 +21,11 @@ class Compressor(ABC):
         pass
 
     def compress(
-        self, files: list[str], algorithm: str, destination: str, password: str = None
+            self,
+            files: list[str],
+            algorithm: str,
+            destination: str,
+            password: Password = None,
     ):
         try:
             algorithm = AlgorithmFactory.get_algorithm(algorithm)
@@ -30,11 +35,11 @@ class Compressor(ABC):
                 with open(compressed_file_path, "rb") as compressed_file:
                     compressed_data = compressed_file.read()
 
-                data = em.encrypt(compressed_data, password.encode())
+                data = em.encrypt(compressed_data, password)
                 compressed_encrypted_file_path = compressed_file_path + ".enc"
 
                 with open(
-                    compressed_encrypted_file_path, "wb"
+                        compressed_encrypted_file_path, "wb"
                 ) as compressed_encrypted_file:
                     compressed_encrypted_file.write(data)
                 os.remove(compressed_file_path)
@@ -47,7 +52,7 @@ class Compressor(ABC):
             logger.error(f"Error during compression: {e}")
             raise e
 
-    def decompress(self, archive: str, destination: str, password=None):
+    def decompress(self, archive: str, destination: str, password: Password = None):
         algorithm = None
         original_path = archive
         try:
@@ -55,9 +60,7 @@ class Compressor(ABC):
                 em = EncryptionManager()
                 with open(archive, "rb") as compressed_encrypted_file:
                     compressed_encrypted_data = compressed_encrypted_file.read()
-                compressed_data = em.decrypt(
-                    compressed_encrypted_data, password.encode()
-                )
+                compressed_data = em.decrypt(compressed_encrypted_data, password)
                 compressed_file_path = archive.replace(".enc", "")
                 with open(compressed_file_path, "wb") as compressed_file:
                     compressed_file.write(compressed_data)

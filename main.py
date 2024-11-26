@@ -1,5 +1,7 @@
 import argparse
 
+from encryption.password import Password
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -34,7 +36,7 @@ def main():
             files=args.files,
             algorithm=args.algorithm,
             output=args.output,
-            password=args.password,
+            password=Password(args.password) if args.password else None,
             direction="compress",
         )
         app.run()
@@ -44,7 +46,7 @@ def main():
         app = CliCompressor(
             files=[args.file],
             output=args.output,
-            password=args.password,
+            password=Password(args.password) if args.password else None,
             direction="decompress",
         )
         app.run()
