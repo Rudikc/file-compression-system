@@ -2,11 +2,12 @@ import os
 import shutil
 import pytest
 
+from compression.algorithm_factory import AlgorithmFactory
 from compression.algorithms import (
     ZipAlgorithm,
     GzipAlgorithm,
     LzmaAlgorithm,
-    detect_algorithm_by_filepath, UnsupportedAlgorithmException,
+    UnsupportedAlgorithmException,
 )
 
 
@@ -67,7 +68,7 @@ def test_compression_and_decompression(
     ],
 )
 def test_detect_algorithm_by_filepath(archive, expected_algorithm):
-    algorithm = detect_algorithm_by_filepath(archive)
+    algorithm = AlgorithmFactory.detect_algorithm_by_filepath(archive)
     assert isinstance(algorithm, expected_algorithm)
 
 
@@ -81,4 +82,4 @@ def test_detect_algorithm_by_filepath(archive, expected_algorithm):
 )
 def test_detect_algorithm_by_filepath_invalid(path):
     with pytest.raises(UnsupportedAlgorithmException):
-        detect_algorithm_by_filepath(path)
+        AlgorithmFactory.detect_algorithm_by_filepath(path)

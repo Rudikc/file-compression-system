@@ -87,29 +87,6 @@ class LzmaAlgorithm(Algorithm):
         os.remove(tar_path)
 
 
-_ALL_ALGORITHMS = {
-    "zip": ZipAlgorithm(),
-    "gzip": GzipAlgorithm(),
-    "lzma": LzmaAlgorithm(),
-}
-
-
-def get_algorithm(algorithm: str) -> Algorithm:
-    return _ALL_ALGORITHMS[algorithm]
-
-
-def detect_algorithm_by_filepath(archive):
-    extension = os.path.splitext(archive)[1]
-    if extension == ".zip":
-        return ZipAlgorithm()
-    elif extension == ".gz":
-        return GzipAlgorithm()
-    elif extension == ".xz":
-        return LzmaAlgorithm()
-    else:
-        raise UnsupportedAlgorithmException("Unsupported archive format")
-
-
 class UnsupportedAlgorithmException(Exception):
     def __init__(self, message="Unsupported algorithm specified"):
         self.message = message

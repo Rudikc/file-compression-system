@@ -3,7 +3,7 @@ import os
 from abc import ABC, abstractmethod
 from datetime import datetime
 
-from compression.algorithms import get_algorithm, detect_algorithm_by_filepath
+from compression.algorithm_factory import AlgorithmFactory
 from encryption.encryption_manager import EncryptionManager
 from history.task_history import TaskHistory, generate_task_id
 from history.compression_task import CompressionTask
@@ -23,7 +23,7 @@ class Compressor(ABC):
         self, files: list[str], algorithm: str, destination: str, password: str = None
     ):
         try:
-            algorithm = get_algorithm(algorithm)
+            algorithm = AlgorithmFactory.get_algorithm(algorithm)
             compressed_file_path = algorithm.compress(files, destination)
             if password:
                 em = EncryptionManager()
@@ -64,7 +64,7 @@ class Compressor(ABC):
             else:
                 compressed_file_path = archive
 
-            algorithm = detect_algorithm_by_filepath(compressed_file_path)
+            algorithm = AlgorithmFactory.detect_algorithm_by_filepath(compressed_file_path)
             algorithm.decompress(compressed_file_path, destination)
 
             if compressed_file_path != original_path:
