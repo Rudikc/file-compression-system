@@ -8,7 +8,11 @@ on:
 jobs:
   build:
     permissions: write-all
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.13']
 
     steps:
       - name: Checkout Code
@@ -17,32 +21,49 @@ jobs:
       - name: Set Up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.13"
+          python-version: ${{ matrix.python-version }}
 
       - name: Install Dependencies
         run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Build Executable
         run: |
-          source venv/bin/activate
           pyinstaller --onefile main.py
 
       - name: Archive Executable
         run: |
           mkdir release
-          mv dist/main release/main
-          tar -czvf release/main.tar.gz -C release main
+          # Rename the executable based on OS
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then mv dist/main release/main-linux; fi
+          if [ "${{ matrix.os }}" == "macos-latest" ]; then mv dist/main release/main-macos; fi
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then mv dist/main.exe release/main-windows.exe; fi
+          # Create archives
+          cd release
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then zip main-windows.zip main-windows.exe; else tar -czvf main-${{ matrix.os }}.tar.gz main-*; fi
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}-artifact
+          path: release/*
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: ./release
 
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: release/main.tar.gz
+          artifacts: ./release/*
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
           body: |
-            Automatically generated release.
+            Automatically generated release for multiple platforms.
