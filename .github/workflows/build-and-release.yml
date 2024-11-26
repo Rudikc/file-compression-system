@@ -64,8 +64,8 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: |
-            ./release/ubuntu-latest-artifact/main-linux.tar.gz
-            ./release/macos-latest-artifact/main-macos.tar.gz
+            ./release/ubuntu-latest-artifact/main-ubuntu-latest.tar.gz
+            ./release/macos-latest-artifact/main-macos-latest.tar.gz
             ./release/windows-latest-artifact/main-windows.zip
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref_name }}
