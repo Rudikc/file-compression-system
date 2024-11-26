@@ -2,8 +2,8 @@ name: Build and Release Executable
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "*"
 
 jobs:
   build:
@@ -37,10 +37,12 @@ jobs:
           mv dist/main release/main
           tar -czvf release/main.tar.gz -C release main
 
-      - name: Upload Executable to GitHub Release
+      - name: Create Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: release/file_compression_system-${{github.ref_name}}.tar.gz
-          replacesArtifacts: false
+          artifacts: release/main.tar.gz
           token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
+          tag: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            Automatically generated release.
